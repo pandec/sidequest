@@ -1,4 +1,6 @@
 import { NavLink } from "react-router";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import {
   Card,
@@ -6,43 +8,41 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Wand2, PenLine, Library } from "lucide-react";
+import { StickyNote, Settings } from "lucide-react";
 
 const quickActions = [
   {
-    to: "/refine",
-    title: "Refine a Query",
-    description: "Paste SQL and get an optimized version with explanations.",
-    icon: Wand2,
+    to: "/notes",
+    title: "Notes",
+    description: "Create and manage your notes.",
+    icon: StickyNote,
   },
   {
-    to: "/write",
-    title: "Write a Query",
-    description: "Describe what you need and let AI write it for you.",
-    icon: PenLine,
-  },
-  {
-    to: "/library",
-    title: "Query Library",
-    description: "Browse and manage your saved queries.",
-    icon: Library,
+    to: "/settings",
+    title: "Settings",
+    description: "Configure your preferences.",
+    icon: Settings,
   },
 ] as const;
 
 export default function Dashboard() {
+  const settings = useQuery(api.settings.get);
+  const displayName = settings?.displayName;
+
   return (
     <ProtectedRoute>
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Welcome to SQL Sidekick
+            Welcome to SideQuest
+            {displayName ? `, ${displayName}` : ""}
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Refine, write, and manage BigQuery SQL queries with AI assistance.
+            Your starter template for building full-stack apps
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           {quickActions.map(({ to, title, description, icon: Icon }) => (
             <NavLink key={to} to={to} className="group">
               <Card className="h-full transition-shadow group-hover:shadow-md">
