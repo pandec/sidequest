@@ -24,7 +24,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Pencil, Trash2, Eye, PenLine, StickyNote } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, PenLine, StickyNote, Download } from "lucide-react";
+import { toCSV, downloadCSV } from "@/lib/csv";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -222,9 +223,31 @@ export default function Notes() {
               Capture ideas, snippets, and anything worth remembering.
             </p>
           </div>
-          <Button onClick={openCreate} className="gap-1.5">
-            <Plus className="size-4" /> New Note
-          </Button>
+          <div className="flex gap-2">
+            {notes && notes.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={() => {
+                  const csv = toCSV(
+                    notes.map((n: { title: string; content: string; _creationTime: number; updatedAt: number }) => ({
+                      Title: n.title,
+                      Content: n.content,
+                      Created: new Date(n._creationTime).toISOString(),
+                      Updated: new Date(n.updatedAt).toISOString(),
+                    })),
+                  );
+                  downloadCSV(csv, "notes.csv");
+                }}
+              >
+                <Download className="size-4" /> Export
+              </Button>
+            )}
+            <Button onClick={openCreate} className="gap-1.5">
+              <Plus className="size-4" /> New Note
+            </Button>
+          </div>
         </div>
 
         {/* Notes grid / empty state */}

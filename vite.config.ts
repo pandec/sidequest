@@ -11,7 +11,9 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       workbox: {
-        // Network-only: no runtime caching — app requires Convex (internet)
+        // Network-only: no caching — app requires Convex (internet).
+        // SW exists only to make the app installable.
+        globPatterns: [],
         runtimeCaching: [],
         navigateFallback: null,
       },
