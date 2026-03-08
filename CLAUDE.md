@@ -25,9 +25,11 @@ src/
     layout/       # Header, Layout (with Outlet)
     auth/         # ProtectedRoute
     ui/           # shadcn/ui components (button, card, dialog, etc.)
+    ErrorBoundary.tsx  # Catches crashes, shows friendly error UI
+    OfflineBanner.tsx  # Shows "you're offline" banner when no internet
   routes/         # Dashboard, Notes, Settings
   hooks/          # useStoreUser, useTheme
-  lib/            # Utilities (cn helper)
+  lib/            # Utilities (cn helper, csv import/export)
   App.tsx         # Router + ThemeProvider
   main.tsx        # Clerk + Convex providers
   index.css       # Tailwind + theme variables
@@ -194,6 +196,22 @@ Browse: [ui.shadcn.com](https://ui.shadcn.com)
 - **Clerk Bot Protection:** If sign-in fails with `needs_client_trust` even on v6, go to Clerk Dashboard > Configure > Attack Protection > Bot Protection > set to "Disabled" or "CAPTCHA".
 - **Clerk JWT template:** Must create a "Convex" JWT template in Clerk Dashboard before auth works with Convex.
 - **Production Convex ops:** Always use `--prod` flag. Never inline `CONVEX_DEPLOYMENT` override.
+
+## PWA
+
+The app is a Progressive Web App — installable on phones/tablets. It requires internet (no offline data sync). When offline, an `OfflineBanner` component shows a "go online" message.
+
+- Configured via `vite-plugin-pwa` in `vite.config.ts`
+- TODO: Generate proper app icons (currently uses favicon SVGs)
+
+## CSV Utilities
+
+`src/lib/csv.ts` provides reusable CSV import/export:
+- `toCSV(data, columns?)` — objects to CSV string
+- `fromCSV(csv)` — CSV string to objects
+- `downloadCSV(csv, filename)` — trigger browser download
+
+Notes page has an "Export" button as example usage.
 
 ## Useful Links
 

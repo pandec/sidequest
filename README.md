@@ -6,8 +6,10 @@ A beginner-friendly starter template for building full-stack web apps with React
 
 - User authentication (sign in / sign up)
 - User settings (display name, dark/light theme)
-- Notes with markdown support (create, edit, delete)
+- Notes with markdown support (create, edit, delete, CSV export)
 - Real-time data sync via Convex
+- Installable as PWA (add to phone home screen)
+- Error boundary (graceful crash handling)
 - Clean, responsive UI with Tailwind + shadcn/ui
 
 ## Tech Stack

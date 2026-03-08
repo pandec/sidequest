@@ -10,7 +10,7 @@ Introduce the project:
 
 > SideQuest Starter is a ready-to-go template for building full-stack web apps. It comes with authentication, a database, real-time updates, and a clean UI -- all wired up and working. You can use it as a starting point for any project idea.
 >
-> Right now it has: login/signup, a notes feature with markdown support, and a settings page (display name + theme). Your job is to build on top of it.
+> Right now it has: login/signup, a notes feature with markdown support, settings page (display name + theme), CSV export, and it's installable on your phone as a PWA. Your job is to build on top of it.
 
 ## 2. Prerequisites Check
 
@@ -42,7 +42,14 @@ Ask the user these questions one at a time. Adapt based on answers:
 
 ## 3. Account Setup
 
-Walk through these only if user doesn't have accounts yet:
+Walk through these only if user doesn't have accounts yet.
+
+**Important context for Claude:** Clerk is a third-party auth service. Explain to the user:
+- Clerk handles all the hard parts of auth (login UI, password reset, Google/GitHub login, session management)
+- The free tier supports up to 10,000 monthly active users — more than enough
+- Clerk's "development mode" works on localhost AND on free hosting URLs (like `*.vercel.app`) — no custom domain needed to get started
+- If they ever want a custom domain (myapp.com), Clerk production mode requires DNS setup, but that's a later concern
+- The alternative would be building auth from scratch (password hashing, email verification, forgot password, session tokens) — Clerk saves weeks of work
 
 ### Clerk (Authentication)
 
@@ -191,11 +198,18 @@ Clerk handles authentication. Explain briefly:
 
 Based on user's answer from step 2.6, suggest relevant ideas. If exploring, offer these:
 
+### Install on your phone
+The app is already a PWA (Progressive Web App). If deployed to Vercel or running locally:
+- On iPhone: Open in Safari > Share > "Add to Home Screen"
+- On Android: Open in Chrome > three-dot menu > "Install app" or "Add to Home Screen"
+- It requires internet to work (no offline mode), but it looks and feels like a native app
+
 ### Enhance existing notes
 - Add tags or categories to notes
 - Add a "pinned" flag to keep important notes at top
 - Add search/filtering on the notes page
 - Add note sharing (public link)
+- CSV import (the export is already built — see `src/lib/csv.ts`)
 
 ### Add a new feature/page
 - Todo list with checkboxes and due dates

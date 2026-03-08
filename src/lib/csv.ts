@@ -21,9 +21,12 @@ export function toCSV<T extends Record<string, unknown>>(
 ): string {
   if (data.length === 0) return "";
 
+  const first = data[0];
+  if (!first) return "";
+
   const cols =
     columns ??
-    Object.keys(data[0]).map((k) => ({ key: k as keyof T, label: k as string }));
+    Object.keys(first).map((k) => ({ key: k as keyof T, label: k as string }));
 
   const header = cols.map((c) => escapeCell(c.label)).join(",");
   const rows = data.map((row) =>
@@ -40,7 +43,7 @@ export function fromCSV(csv: string): Record<string, string>[] {
   const rows = parseRows(csv);
   if (rows.length < 2) return [];
 
-  const headers = rows[0];
+  const headers = rows[0]!;
   return rows.slice(1).map((row) => {
     const obj: Record<string, string> = {};
     headers.forEach((h, i) => {
