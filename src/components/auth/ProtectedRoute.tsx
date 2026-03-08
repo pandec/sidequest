@@ -19,7 +19,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
         <h2 className="text-2xl font-semibold">Sign in to continue</h2>
         <p className="text-muted-foreground">
-          You need to be signed in to access SQL Sidekick.
+          Sign in to get started.
         </p>
         <SignInButton mode="modal">
           <Button size="lg">Sign in</Button>
