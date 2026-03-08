@@ -3,8 +3,7 @@ import { query, mutation } from "./_generated/server";
 import { getCurrentUser } from "./users";
 
 const DEFAULTS = {
-  model: "claude-sonnet-4-6",
-  effort: "medium",
+  displayName: "",
   theme: "light" as const,
 };
 
@@ -29,8 +28,7 @@ export const get = query({
 
 export const update = mutation({
   args: {
-    model: v.optional(v.string()),
-    effort: v.optional(v.string()),
+    displayName: v.optional(v.string()),
     theme: v.optional(v.union(v.literal("light"), v.literal("dark"))),
   },
   handler: async (ctx, args) => {
@@ -44,18 +42,15 @@ export const update = mutation({
 
     if (existing) {
       const updates: Record<string, unknown> = {};
-      if (args.model !== undefined) updates.model = args.model;
-      if (args.effort !== undefined) updates.effort = args.effort;
+      if (args.displayName !== undefined) updates.displayName = args.displayName;
       if (args.theme !== undefined) updates.theme = args.theme;
-
       await ctx.db.patch(existing._id, updates);
       return existing._id;
     }
 
     return await ctx.db.insert("settings", {
       userId: user._id,
-      model: args.model ?? DEFAULTS.model,
-      effort: args.effort ?? DEFAULTS.effort,
+      displayName: args.displayName ?? DEFAULTS.displayName,
       theme: args.theme ?? DEFAULTS.theme,
     });
   },

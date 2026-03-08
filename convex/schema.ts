@@ -9,48 +9,17 @@ export default defineSchema({
     tokenIdentifier: v.string(),
   }).index("by_token", ["tokenIdentifier"]),
 
-  queries: defineTable({
-    userId: v.id("users"),
-    title: v.string(),
-    originalSql: v.string(),
-    refinedSql: v.optional(v.string()),
-    mode: v.union(v.literal("refine"), v.literal("write")),
-    description: v.optional(v.string()),
-    threadId: v.optional(v.string()),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  }).index("by_user", ["userId"]),
-
-  dbSchemas: defineTable({
-    userId: v.id("users"),
-    name: v.string(),
-    content: v.string(),
-    isDefault: v.optional(v.boolean()),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  }).index("by_user", ["userId"]),
-
-  bestPractices: defineTable({
-    userId: v.id("users"),
-    content: v.string(),
-    updatedAt: v.number(),
-  }).index("by_user", ["userId"]),
-
   settings: defineTable({
     userId: v.id("users"),
-    model: v.string(),
-    effort: v.string(),
+    displayName: v.optional(v.string()),
     theme: v.union(v.literal("light"), v.literal("dark")),
   }).index("by_user", ["userId"]),
 
-  usageLogs: defineTable({
+  notes: defineTable({
     userId: v.id("users"),
-    threadId: v.string(),
-    model: v.string(),
-    promptTokens: v.number(),
-    completionTokens: v.number(),
-    totalTokens: v.number(),
-    estimatedCostUsd: v.number(),
+    title: v.string(),
+    content: v.string(),
     createdAt: v.number(),
-  }).index("by_user", ["userId"]).index("by_thread", ["threadId"]),
+    updatedAt: v.number(),
+  }).index("by_user", ["userId"]),
 });
