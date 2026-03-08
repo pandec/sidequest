@@ -1,43 +1,23 @@
 import { NavLink } from "react-router";
 import { UserButton, SignInButton } from "@clerk/react";
-import { Authenticated, Unauthenticated, useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { Authenticated, Unauthenticated } from "convex/react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import {
-  Database,
+  Rocket,
   LayoutDashboard,
-  Wand2,
-  PenLine,
-  Library,
-  History,
+  StickyNote,
   Settings,
   Moon,
   Sun,
-  Coins,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatCost } from "@/lib/format-cost";
 
 const navItems = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/refine", label: "Refine", icon: Wand2 },
-  { to: "/write", label: "Write", icon: PenLine },
-  { to: "/library", label: "Library", icon: Library },
-  { to: "/history", label: "History", icon: History },
+  { to: "/", label: "Home", icon: LayoutDashboard },
+  { to: "/notes", label: "Notes", icon: StickyNote },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
-
-function TotalCost() {
-  const usage = useQuery(api.usageLogs.getUserTotalUsage);
-  if (!usage || usage.estimatedCostUsd === 0) return null;
-  return (
-    <div className="flex items-center gap-1 rounded-md bg-muted/60 px-2 py-1 font-mono text-xs text-muted-foreground">
-      <Coins className="size-3" />
-      <span>{formatCost(usage.estimatedCostUsd)}</span>
-    </div>
-  );
-}
 
 export function Header() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -51,8 +31,8 @@ export function Header() {
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-4">
         {/* Logo */}
         <NavLink to="/" className="flex items-center gap-2 font-semibold">
-          <Database className="size-5 text-primary" />
-          <span className="hidden sm:inline">SQL Sidekick</span>
+          <Rocket className="size-5 text-primary" />
+          <span className="hidden sm:inline">SideQuest</span>
         </NavLink>
 
         {/* Nav links */}
@@ -81,10 +61,6 @@ export function Header() {
 
         {/* Right side */}
         <div className="ml-auto flex items-center gap-2">
-          <Authenticated>
-            <TotalCost />
-          </Authenticated>
-
           <Button
             variant="ghost"
             size="icon"
