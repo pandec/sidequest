@@ -226,13 +226,21 @@ Ask the user if they're interested in any of these. Only set up what they want:
 - Example uses: AI writing assistant for notes, chat bot, content summarization
 
 ### Deployment
-Ask where they want to deploy. Brief overview of each:
+Ask if they want to share their app with others via a URL.
 
-- **Vercel:** Easiest for React apps. Connect GitHub repo, auto-deploys on push. Set `VITE_` env vars in Vercel dashboard.
-- **Cloudflare Pages:** Fast, generous free tier. Use `@cloudflare/vite-plugin`. Set `VITE_` env vars in Cloudflare dashboard.
+**Recommended: Vercel** (easiest option)
+1. Go to [vercel.com](https://vercel.com) and sign in with GitHub
+2. Click "Import Project" and select the repo
+3. Vercel auto-detects Vite — no config needed
+4. Add environment variables: `VITE_CONVEX_URL` and `VITE_CLERK_PUBLISHABLE_KEY`
+5. Deploy — get a `*.vercel.app` URL instantly
+6. Auto-deploys on every push to main
+
+**Alternatives** (if user prefers):
+- **Cloudflare Pages:** Fast, generous free tier. Needs `@cloudflare/vite-plugin` + `wrangler`. More setup but great CDN.
 - **Netlify:** Similar to Vercel. Connect repo, set env vars, auto-deploys.
 
-For any deployment: remember to set `VITE_CONVEX_URL` and `VITE_CLERK_PUBLISHABLE_KEY` as build-time environment variables in the hosting platform's dashboard.
+For any platform: set `VITE_CONVEX_URL` and `VITE_CLERK_PUBLISHABLE_KEY` as build-time environment variables.
 
 ### Monitoring
 - **Sentry:** Error tracking. Catches frontend/backend errors, shows stack traces.
