@@ -1,6 +1,6 @@
 # macOS Setup Guide
 
-Step-by-step guide to get SQL Sidekick running on your Mac. No prior coding experience required.
+Step-by-step guide to set up a project built with the SideQuest Starter template on your Mac. No prior coding experience required.
 
 ---
 
@@ -131,16 +131,16 @@ If you don't already have one, we recommend:
 
 ## 8. Fork and Clone the Repo
 
-1. Go to the SQL Sidekick repository on GitHub
+1. Go to your project's repository on GitHub
 2. Click the **Fork** button (top right) to create your own copy
 3. Clone your fork:
 
 ```bash
-gh repo clone YOUR_USERNAME/sql-sidekick
-cd sql-sidekick
+gh repo clone YOUR_USERNAME/your-project
+cd your-project
 ```
 
-Replace `YOUR_USERNAME` with your GitHub username.
+Replace `YOUR_USERNAME` with your GitHub username and `your-project` with the actual repo name.
 
 ---
 
@@ -160,12 +160,12 @@ Clerk handles user authentication (sign in / sign up).
 
 1. Go to [clerk.com](https://clerk.com) and create a free account
 2. Click **Create Application**
-3. Name it something like "SQL Sidekick"
+3. Name it after your project (e.g. "My App Dev")
 4. Under sign-in options, enable **Email** and/or **Google** (your choice)
 5. Click **Create Application**
 6. On the next screen, find your **Publishable Key** (starts with `pk_test_...`). Copy it.
 
-> **Recommended:** Enable **Google OAuth** for smoother sign-in. Go to **Configure** > **SSO Connections** > **Enable Google**. Email/password sign-in can trigger "Client Trust" issues, especially behind Cloudflare. Google OAuth avoids this.
+> **Recommended:** Enable **Google OAuth** for smoother sign-in. Go to **Configure** > **SSO Connections** > **Enable Google**. Email/password sign-in can trigger "Client Trust" issues in some hosting environments. Google OAuth avoids this.
 
 ---
 
@@ -179,7 +179,7 @@ pnpm convex dev
 
 This will:
 1. Open your browser to log in with GitHub
-2. Ask you to create a new project -- name it "sql-sidekick"
+2. Ask you to create a new project -- name it after your project (e.g. "my-app")
 3. Automatically create a `.env.local` file with `CONVEX_URL` and `CONVEX_DEPLOYMENT`
 
 Once it says the schema is synced, press **Ctrl+C** to stop it.
@@ -209,7 +209,7 @@ This step connects Clerk authentication to your Convex backend.
 
 ## 13. Set Environment Variables
 
-There are **3 places** where environment variables need to be set:
+There are **2 places** where environment variables need to be set:
 
 ### 1. Local environment (`.env.local`)
 
@@ -227,16 +227,9 @@ VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
 1. Go to [dashboard.convex.dev](https://dashboard.convex.dev)
 2. Select your project
 3. Go to **Settings** > **Environment Variables**
-4. Add these variables:
+4. Add this variable:
    - **`CLERK_JWT_ISSUER_DOMAIN`** -- the Issuer URL you copied in step 12 (e.g. `https://your-app.clerk.accounts.dev`)
-   - **`ANTHROPIC_API_KEY`** -- your Anthropic API key (needed for AI features)
 5. Click **Save**
-
-### 3. Cloudflare Pages (if deploying)
-
-If you plan to deploy (see step 15), you'll also need to set these in your Cloudflare Pages project:
-- `VITE_CONVEX_URL`
-- `VITE_CLERK_PUBLISHABLE_KEY`
 
 ---
 
@@ -254,24 +247,7 @@ In a separate terminal tab, start the Convex dev server:
 pnpm convex dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser. You should see SQL Sidekick running.
-
----
-
-## 15. Deploy to Cloudflare Pages (optional)
-
-If you want to deploy your app to the web:
-
-1. Create a Cloudflare Pages project connected to your GitHub repo
-2. Set the build command to `pnpm build` and the output directory to `dist`
-3. Add environment variables in the Cloudflare Pages settings:
-   - `VITE_CONVEX_URL` -- your production Convex URL
-   - `VITE_CLERK_PUBLISHABLE_KEY` -- your Clerk publishable key
-4. Or deploy from the CLI:
-
-```bash
-pnpm deploy
-```
+Open [http://localhost:5173](http://localhost:5173) in your browser. You should see your app running.
 
 ---
 
@@ -283,7 +259,6 @@ pnpm deploy
 | `command not found: pnpm` | Run `npm install -g pnpm` again |
 | "No address provided to ConvexReactClient" | Add `VITE_CONVEX_URL` to `.env.local` (copy the value from the `CONVEX_URL` line) |
 | "needs_client_trust not supported" | Make sure you're using `@clerk/react` (v6), not `@clerk/clerk-react` (v5). Also check Clerk > Attack Protection > Bot Protection is set to **Disabled** or **CAPTCHA**. |
-| Sign-in fails on Cloudflare | Enable Google OAuth in Clerk (Configure > SSO Connections > Enable Google), or ensure Bot Protection is disabled. |
 | Clerk sign-in not working | Double-check `VITE_CLERK_PUBLISHABLE_KEY` in `.env.local` |
 | Convex errors about auth | Verify `CLERK_JWT_ISSUER_DOMAIN` is set in Convex dashboard |
 | Port 5173 already in use | Kill other dev servers or use `pnpm dev --port 3000` |
