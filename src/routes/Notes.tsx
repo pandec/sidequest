@@ -245,7 +245,7 @@ export default function Notes() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {notes.map((note) => {
+            {notes.map((note: { _id: Id<"notes">; title: string; content: string; updatedAt: number }) => {
               const preview = stripMarkdown(note.content).slice(0, 100);
               return (
                 <Card
@@ -271,7 +271,7 @@ export default function Notes() {
                         variant="ghost"
                         size="icon"
                         className="size-7"
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent) => {
                           e.stopPropagation();
                           openEdit(note);
                         }}
@@ -282,7 +282,7 @@ export default function Notes() {
                         variant="ghost"
                         size="icon"
                         className="size-7 text-destructive hover:text-destructive"
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent) => {
                           e.stopPropagation();
                           handleDelete(note._id);
                         }}
