@@ -213,6 +213,16 @@ The app is a Progressive Web App — installable on phones/tablets. It requires 
 
 Notes page has an "Export" button as example usage.
 
+## Image Uploads
+
+Notes support optional header images via Convex file storage:
+- `convex/notes.ts` has `generateUploadUrl` mutation
+- `src/hooks/useImageUpload.ts` handles resize + upload flow
+- `src/hooks/useImageUrl.ts` resolves storage ID → CDN URL
+- `src/lib/imageResize.ts` client-side resize (max 1920px, JPEG 0.85)
+- Images limited to 5MB before resize
+- Mobile PWA: native camera/library picker via `accept="image/*"`
+
 ## Useful Links
 
 - [Convex Docs](https://docs.convex.dev)
