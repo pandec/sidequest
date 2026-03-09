@@ -19,6 +19,7 @@ export default defineSchema({
     userId: v.id("users"),
     title: v.string(),
     content: v.string(),
+    imageId: v.optional(v.id("_storage")),
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),
