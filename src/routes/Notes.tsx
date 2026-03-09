@@ -24,7 +24,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Pencil, Trash2, Eye, PenLine, StickyNote, Download } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, PenLine, StickyNote, Download, Camera, X } from "lucide-react";
+import { useImageUpload } from "@/hooks/useImageUpload";
+import { useImageUrl } from "@/hooks/useImageUrl";
 import { toCSV, downloadCSV } from "@/lib/csv";
 
 // ---------------------------------------------------------------------------
@@ -64,7 +66,7 @@ function relativeTime(timestamp: number): string {
 interface NoteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initial?: { id: Id<"notes">; title: string; content: string };
+  initial?: { id: Id<"notes">; title: string; content: string; imageId?: Id<"_storage"> };
 }
 
 function NoteDialog({ open, onOpenChange, initial }: NoteDialogProps) {
@@ -76,6 +78,17 @@ function NoteDialog({ open, onOpenChange, initial }: NoteDialogProps) {
   const [preview, setPreview] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  const [pendingImageId, setPendingImageId] = useState<Id<"_storage"> | undefined>(initial?.imageId);
+  const [imageRemoved, setImageRemoved] = useState(false);
+
+  const imageUpload = useImageUpload((imageId) => {
+    setPendingImageId(imageId);
+    setImageRemoved(false);
+  });
+
+  const displayImageId = imageRemoved ? undefined : pendingImageId;
+  const imageUrl = useImageUrl(displayImageId);
+
   const isEdit = !!initial;
 
   // Reset form when dialog opens with new data
@@ -84,8 +97,15 @@ function NoteDialog({ open, onOpenChange, initial }: NoteDialogProps) {
       setTitle(initial?.title ?? "");
       setContent(initial?.content ?? "");
       setPreview(false);
+      setPendingImageId(initial?.imageId);
+      setImageRemoved(false);
     }
     onOpenChange(next);
+  };
+
+  const handleRemoveImage = () => {
+    setPendingImageId(undefined);
+    setImageRemoved(true);
   };
 
   const handleSave = async () => {
@@ -93,9 +113,15 @@ function NoteDialog({ open, onOpenChange, initial }: NoteDialogProps) {
     setSaving(true);
     try {
       if (isEdit) {
-        await updateNote({ id: initial.id, title, content });
+        await updateNote({
+          id: initial.id,
+          title,
+          content,
+          ...(pendingImageId && pendingImageId !== initial.imageId ? { imageId: pendingImageId } : {}),
+          ...(imageRemoved ? { removeImage: true } : {}),
+        });
       } else {
-        await createNote({ title, content });
+        await createNote({ title, content, imageId: pendingImageId });
       }
       handleOpenChange(false);
     } finally {
@@ -111,6 +137,25 @@ function NoteDialog({ open, onOpenChange, initial }: NoteDialogProps) {
         </DialogHeader>
 
         <div className="space-y-4 py-2">
+          {/* Image upload */}
+          <div className="space-y-2">
+            {imageUrl ? (
+              <div className="relative">
+                <img src={imageUrl} alt="Note image" className="h-40 w-full rounded-md object-cover" />
+                <Button variant="destructive" size="icon" className="absolute right-2 top-2 size-7" onClick={handleRemoveImage}>
+                  <X className="size-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button variant="outline" size="sm" className="gap-1.5" onClick={imageUpload.pickImage} disabled={imageUpload.uploading}>
+                <Camera className="size-4" />
+                {imageUpload.uploading ? "Uploading…" : "Add Image"}
+              </Button>
+            )}
+            {imageUpload.error && <p className="text-sm text-destructive">{imageUpload.error}</p>}
+            <input {...imageUpload.inputProps} />
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="note-title">Title</Label>
             <Input
@@ -183,6 +228,16 @@ function NoteDialog({ open, onOpenChange, initial }: NoteDialogProps) {
 }
 
 // ---------------------------------------------------------------------------
+// NoteCardImage — lazy-loaded thumbnail for note cards
+// ---------------------------------------------------------------------------
+
+function NoteCardImage({ imageId }: { imageId: Id<"_storage"> }) {
+  const url = useImageUrl(imageId);
+  if (!url) return null;
+  return <img src={url} alt="" className="h-36 w-full rounded-t-lg object-cover" />;
+}
+
+// ---------------------------------------------------------------------------
 // Notes page
 // ---------------------------------------------------------------------------
 
@@ -195,6 +250,7 @@ export default function Notes() {
     id: Id<"notes">;
     title: string;
     content: string;
+    imageId?: Id<"_storage">;
   } | null>(null);
 
   const openCreate = () => {
@@ -202,8 +258,8 @@ export default function Notes() {
     setDialogOpen(true);
   };
 
-  const openEdit = (note: { _id: Id<"notes">; title: string; content: string }) => {
-    setEditing({ id: note._id, title: note.title, content: note.content });
+  const openEdit = (note: { _id: Id<"notes">; title: string; content: string; imageId?: Id<"_storage"> }) => {
+    setEditing({ id: note._id, title: note.title, content: note.content, imageId: note.imageId });
     setDialogOpen(true);
   };
 
@@ -231,7 +287,7 @@ export default function Notes() {
                 className="gap-1.5"
                 onClick={() => {
                   const csv = toCSV(
-                    notes.map((n: { title: string; content: string; _creationTime: number; updatedAt: number }) => ({
+                    notes.map((n: { title: string; content: string; _creationTime: number; updatedAt: number; imageId?: Id<"_storage"> }) => ({
                       Title: n.title,
                       Content: n.content,
                       Created: new Date(n._creationTime).toISOString(),
@@ -268,14 +324,15 @@ export default function Notes() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {notes.map((note: { _id: Id<"notes">; title: string; content: string; updatedAt: number }) => {
+            {notes.map((note: { _id: Id<"notes">; title: string; content: string; updatedAt: number; imageId?: Id<"_storage"> }) => {
               const preview = stripMarkdown(note.content).slice(0, 100);
               return (
                 <Card
                   key={note._id}
-                  className="group flex cursor-pointer flex-col transition-shadow hover:shadow-md"
+                  className="group flex cursor-pointer flex-col overflow-hidden transition-shadow hover:shadow-md"
                   onClick={() => openEdit(note)}
                 >
+                  {note.imageId && <NoteCardImage imageId={note.imageId} />}
                   <CardHeader>
                     <CardTitle className="line-clamp-1">{note.title}</CardTitle>
                     <CardDescription className="line-clamp-2">
