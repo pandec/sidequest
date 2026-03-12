@@ -90,6 +90,28 @@ If `~/.claude.json` doesn't exist or has no `mcpServers` key, create/add it. Be 
 
 ---
 
+## Phase 3.5: Status Line
+
+Check if the user has a statusline configured. Read their `~/.claude/settings.json` and look for a `statusLine` key.
+
+If no statusline is configured, offer to set one up: "Claude Code can show useful info at the bottom of your terminal — current directory, git branch, model, context usage. Want me to set that up?"
+
+If yes:
+1. Copy `tools/statusline-command.sh` to `~/.claude/statusline-command.sh`
+2. Make it executable: `chmod +x ~/.claude/statusline-command.sh`
+3. Add to `~/.claude/settings.json`:
+   ```json
+   "statusLine": {
+     "type": "command",
+     "command": "bash ~/.claude/statusline-command.sh"
+   }
+   ```
+   Be careful not to overwrite existing settings — merge into the existing JSON.
+
+If they already have a statusline configured, skip this step entirely.
+
+---
+
 ## Phase 4: Shell Aliases
 
 Offer to add useful shortcuts. Present them as: "I can add a few shell shortcuts that make things easier. These are just aliases — quick ways to open things:"
