@@ -5,6 +5,11 @@ dist
 .DS_Store
 excalidraw.log
 
+# Claude Code local data (keep commands/)
+.claude/*
+!.claude/commands/
+!.claude/commands/**
+
 # wrangler files
 .wrangler
 .dev.vars*
